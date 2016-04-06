@@ -602,6 +602,11 @@ namespace WebSocketSharp.Server
       _authSchemes = AuthenticationSchemes.Anonymous;
       _dnsStyle = Uri.CheckHostName (hostname) == UriHostNameType.Dns;
       _listener = new TcpListener (address, port);
+#if !UBUNTU
+        //Use the same socket to accept connections from IPv4 and IPv6 networks (Supported since Windows Vista)
+        if(address.Equals(System.Net.IPAddress.IPv6Any))
+          _listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, false);
+#endif
       _logger = new Logger ();
       _services = new WebSocketServiceManager (_logger);
       _sync = new object ();
